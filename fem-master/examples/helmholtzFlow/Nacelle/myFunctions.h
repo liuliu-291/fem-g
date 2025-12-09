@@ -1,0 +1,2 @@
+void Nacelle(const double h_near = 0.01, const double h_far = 0.02, const double Lx = 3., const double Ly = 2.5, const double L_duct = -0.3, int ElementOrder = 2, int Npml = 2, int Npml_active = 0);
+void getInputMode(int m, int n, double w, double M, std::complex< double > &kzmn, double &krmn, gmshfem::function::ScalarFunction< std::complex< double > > &psi, gmshfem::function::ScalarFunction< std::complex< double > > &dr_psi, double Rin = 0.3586206896556000);

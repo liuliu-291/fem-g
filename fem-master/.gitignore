@@ -1,0 +1,14 @@
+bin/
+bin_/
+build/
+build_*/
+lib/
+lib_*/
+*.res
+*.pre
+*.pos
+*.db*
+*.msh
+*~
+*#
+.DS_Store

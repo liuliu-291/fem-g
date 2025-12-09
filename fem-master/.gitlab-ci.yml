@@ -1,0 +1,73 @@
+variables:
+  EXTRA_OPTION: "-DENABLE_MPI=1 -DENABLE_BESSEL=ON"
+
+# ----------------------------------------------
+# Continuous integration builds for all branches
+# ----------------------------------------------
+stages:
+  - build
+  - test
+
+linux64_build:
+  stage: build
+  image: onelab/ubuntu20.04
+  script:
+    - mkdir local
+    - mkdir build && cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=../local ${EXTRA_OPTION} ..
+    - make -j 8
+    - make install
+  artifacts:
+    expire_in: 1 hrs
+    paths:
+      - local
+  tags:
+    - linux64
+    - docker
+
+linux64_tutos:
+  stage: test
+  image: onelab/ubuntu20.04
+  script:
+    - mkdir build && cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=../local ${EXTRA_OPTION} ..
+    - ctest -j 1 -R 'tuto:' --output-on-failure
+  tags:
+    - linux64
+    - docker
+  only:
+    - master
+    
+linux64_examples:
+  stage: test
+  image: onelab/ubuntu20.04
+  script:
+    - mkdir build && cd build
+    - cmake -DCMAKE_INSTALL_PREFIX=../local ${EXTRA_OPTION} ..
+    - ctest -j 1 -R 'example:' --output-on-failure
+  tags:
+    - linux64
+    - docker
+  only:
+    - master
+
+linux64_coverage: 
+  stage: test
+  image: onelab/ubuntu20.04
+  dependencies: []
+  script:
+    - mkdir build && cd build
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD:/usr/local/lib
+    - cmake -DENABLE_COVERAGE=ON ${EXTRA_OPTION} ..
+    - make coverage_report -j 8
+    - ./coverage -info
+  coverage: '/lines: \d+\.\d+/'
+  artifacts:
+    name: "coverage_report"
+    paths:
+      - build/coverage_report
+  tags:
+    - linux64
+    - docker
+    
+    
